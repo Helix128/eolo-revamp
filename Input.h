@@ -7,23 +7,24 @@
 
 class Input {
 public:
-  // variables públicas de input
-  volatile byte encoderDirection = 0;
-  volatile byte encoderCounter = 0;
-  volatile bool buttonPressed = false;
 
-  Input() {
-  }
+  // Variables públicas de input
+  volatile byte encoderDirection = 0; // Dirección (Horario/Antihorario)
+  volatile byte encoderCounter = 0; // Contador de pasos del encoder
+  volatile bool buttonPressed = false; // Estado del botón del encoder
 
   void begin() {
-    Wire.begin(SDA_PIN, SCL_PIN);
-    Wire.setClock(100000);
-    Serial.println("INPUT INIT");
+    Wire.begin(SDA_PIN, SCL_PIN); // Inicializa Wire para comunicación I2C
+    Wire.setClock(100000); // 100kHz
+    Serial.println("Encoder inicializado");
   }
+
+  // Función helper para actualizar datos del encoder
   void poll() {
     readEncoderData();
   }
 
+  // Reiniciar valor del encoder via driver
   void resetCounter() {
     Wire.beginTransmission(ATTINY_ADDRESS);
     Wire.write(CMD_RESET_COUNTER);
@@ -32,6 +33,7 @@ public:
     }
   }
 
+  // Reiniciar botón del encoder via driver
   void resetButton() {
     Wire.beginTransmission(ATTINY_ADDRESS);
     Wire.write(CMD_RESET_BUTTON);
@@ -40,7 +42,9 @@ public:
     }
   }
 
+  
 private:
+  // Función interna para leer datos del encoder
   void readEncoderData() {
     if (Wire.requestFrom(ATTINY_ADDRESS, 3) == 3) {
       byte prevDirection = encoderDirection;
@@ -52,15 +56,15 @@ private:
       buttonPressed = (Wire.read() == 1);
       
       if (encoderDirection != prevDirection) {
-      Serial.print("Direction changed to: ");
+      Serial.print("Encoder: Direccion cambio a ");
       Serial.println(encoderDirection);
       }
       if (encoderCounter != prevCounter) {
-      Serial.print("Counter changed to: ");
+      Serial.print("Encoder: Contador cambio a ");
       Serial.println(encoderCounter);
       }
       if (buttonPressed != prevButton) {
-      Serial.print("Button pressed: ");
+      Serial.print("Encoder: Boton pulsado? ");
       Serial.println(buttonPressed);
       }
     }

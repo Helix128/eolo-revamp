@@ -1,27 +1,32 @@
+// Librerías para display y comunicación I2C
 #include <U8g2lib.h>
 #include <Wire.h>
-#include "Logos.h"
-#include "Input.h"
-#include "GUI.h"
-#include "Config.h"
 
+// Módulos del proyecto
+#include "Logos.h"
+#include "Input.h" 
+#include "Config.h" 
+#include "Logger.h" 
+#include "Motor.h" 
+
+// Escenas de la interfaz
+#include "Scenes/IScene.h" // Escena "base"
+#include "Scenes/HomeScene.h"
+
+// Definición del display
+// (DisplayModel definido en Config.h, se reemplaza por el modelo real de pantalla)
 DisplayModel u8g2(U8G2_R0, SCL_PIN, SDA_PIN);
+
+// Definición del input manager (maneja comunicación con driver del encoder/botón)
 Input input;
 
-constexpr unsigned int hash(const char* s, int off = 0) {
-  return !s[off] ? 5381 : (hash(s, off + 1) * 33) ^ s[off];
-}
-
-char* pantallaActual = "home";
-int seleccionId = 0;
-
-GUI gui(u8g2, input, pantallaActual, seleccionId);
+// Escena actual
+Scene* currentScene;
 
 void setup() {
   Serial.begin(115200);
-  Serial.setTimeout(100);
-  while (!Serial) delay(100);
-  Serial.println("BOOT");
+  while (!Serial) delay(10); // Espera a que se abra el monitor serial
+  Serial.println("EOLO Boot");
   input.begin();
   u8g2.begin();
   u8g2.clearBuffer();
@@ -33,6 +38,6 @@ void setup() {
 
 void loop() {
   input.poll();
-  gui.displayInicio();
-  delay(10);
+  currentScene->draw(u8g2, input);
+  delay(16);
 }
