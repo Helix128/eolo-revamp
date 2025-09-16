@@ -26,5 +26,4 @@ void loop() {
   // Actualizar el contexto de la app y la escena actual
   context.update();
   SceneManager::update(context);
-  delay(33); // ~30 FPS
 }

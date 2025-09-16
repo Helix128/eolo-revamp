@@ -11,28 +11,19 @@ class FlujoScene : public IScene {
 private:
     static constexpr float MIN_FLUJO = 1.0f;
     static constexpr float MAX_FLUJO = 20.0f;
-    static constexpr float PASO_FLUJO = 0.1f;
 
 public:
     void enter(AppContext& context) override {
-        // Al entrar, sincronizar contador del encoder con el valor actual de flujo
+        // Al entrar, solo resetear el contador del encoder
         context.input.resetCounter();
-        context.input.encoderCounter = (int)(context.flujoObjetivo * 10);
         Serial.println("Entrando a FlujoScene");
     }
 
     void update(AppContext& context) override {
         // Actualizar estado desde input
-        float nuevoFlujo = context.input.encoderCounter * PASO_FLUJO;
-        
-        // Restringir flujo dentro del rango válido
-        if (nuevoFlujo < MIN_FLUJO) {
-            nuevoFlujo = MIN_FLUJO;
-            context.input.encoderCounter = (int)(MIN_FLUJO / PASO_FLUJO);
-        } else if (nuevoFlujo > MAX_FLUJO) {
-            nuevoFlujo = MAX_FLUJO;
-            context.input.encoderCounter = (int)(MAX_FLUJO / PASO_FLUJO);
-        }
+        // Mapear encoder (0-255) al rango de flujo (MIN_FLUJO - MAX_FLUJO)
+        float rangoFlujo = MAX_FLUJO - MIN_FLUJO;
+        float nuevoFlujo = MIN_FLUJO + (context.input.encoderCounter / 255.0f) * rangoFlujo;
         
         context.flujoObjetivo = nuevoFlujo;
         
@@ -42,8 +33,13 @@ public:
             Serial.print("Flujo configurado a: ");
             Serial.println(context.flujoObjetivo);
             // TODO -> crear dashboard
-            SceneManager::setScene("dashboard", context);
-            return;
+            if(context.capturaActiva) // si está en modo activo
+                SceneManager::setScene("dashboard", context); // captura ahora, no pide hora
+                return;
+            else{ // pide hora para capturar después
+                SceneManager::setScene("hora", context);
+                return;
+            }
         }
 
         // Mostrar estado actual
@@ -58,7 +54,7 @@ public:
         char buffer[10];
         dtostrf(context.flujoObjetivo, 4, 1, buffer);
         
-        context.u8g2.setFont(u8g2_font_logisoso32_tr);
+        context.u8g2.setFont(u8g2_font_profont17_tr);
         int anchoTexto = context.u8g2.getStrWidth(buffer);
         int x = (128 - anchoTexto) / 2; // Centrar horizontalmente
         context.u8g2.drawStr(x, 50, buffer);
@@ -66,11 +62,7 @@ public:
         // Dibujar unidades
         context.u8g2.setFont(u8g2_font_unifont_t_symbols);
         context.u8g2.drawStr(x + anchoTexto + 5, 50, "L/min");
-        
-        // Dibujar instrucciones
-        context.u8g2.setFont(u8g2_font_fivepx_tr);
-        context.u8g2.drawStr(20, 60, "Girar: ajustar, Pulsar: guardar");
-        
+    
         context.u8g2.sendBuffer();
     }
 };
