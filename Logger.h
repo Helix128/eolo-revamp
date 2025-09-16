@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <SD.h>
+#include "AppContext.h"
 
 #define SD_CS_PIN 5
 #define SD_MOSI_PIN 23
@@ -11,7 +12,7 @@
 
 const char* logFile = "log.csv";
 
-// Forward declaration
+// Declaración adelantada
 struct AppContext;
 
 class Logger {
@@ -25,33 +26,54 @@ public:
         return true;
     }
     
-    // Log a data snapshot using AppContext
-    void logSnapshot(AppContext& context) {
+    // Registra un snapshot del estado actual en el archivo de log
+    void capture(AppContext& context) {
         File dataFile = SD.open(logFile, FILE_APPEND);
         if (dataFile) {
-            // Log timestamp
+            // Timestamp
             dataFile.print(millis());
             dataFile.print(",");
             
-            // Log target flow
+            // Flujo observado
+            dataFile.print(context.flujoObjetivo); // Placeholder, reemplazar con valor real
+            dataFile.print(",");
+
+            // Flujo objetivo/seteado
             dataFile.print(context.flujoObjetivo);
             dataFile.print(",");
+
+            // Temperatura ºC (placeholder)
+            dataFile.print(25.0); // Reemplazar con lectura real
+            dataFile.print(",");
             
-            // Log battery level
+            // Humedad %RH (placeholder)
+            dataFile.print(50.0); // Reemplazar con lectura real
+            dataFile.print(",");
+
+            // Presión hPa (placeholder)
+            dataFile.print(1013.25); // Reemplazar con lectura real
+            dataFile.print(",");
+
+            // PM1.0 (placeholder) (DE ESTAR DESACTIVADO, USAR -1)
+            dataFile.print(10); // Reemplazar con lectura real
+            dataFile.print(","); 
+
+            // PM2.5 (placeholder) (DE ESTAR DESACTIVADO, USAR -1)
+            dataFile.print(20); // Reemplazar con lectura real
+            dataFile.print(",");
+
+            // PM10 (placeholder) (DE ESTAR DESACTIVADO, USAR -1)
+            dataFile.print(30); // Reemplazar con lectura real
+            dataFile.print(",");
+
+            // Batería %
             dataFile.print(context.getBatteryPercentage());
-            dataFile.print(",");
-            
-            // Log capture status
-            dataFile.print(context.capturaActiva ? 1 : 0);
-            dataFile.print(",");
-            
-            // Log elapsed time
-            dataFile.println(context.tiempoTranscurrido);
+            dataFile.print("\n");
             
             dataFile.close();
-            Serial.println("Data logged to SD");
+            Serial.println("Datos guardados en SD");
         } else {
-            Serial.println("Error opening log file");
+            Serial.println("Error guardando datos en SD");
         }
     }
 };

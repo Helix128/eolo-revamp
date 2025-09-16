@@ -1,20 +1,20 @@
 #ifndef ISCENE_H
 #define ISCENE_H
 
-// Forward declaration of AppContext to avoid circular dependencies
+// Declaración adelantada de AppContext para evitar dependencias circulares
 struct AppContext;
 
-// Interface for defining a scene in the interface
+// Interfaz para definir una escena en la interfaz
 class IScene
 {
 public: 
-    // Called when entering the scene (for one-time initialization)
+    // Llamado al entrar en la escena (para inicialización única)
     virtual void enter(AppContext& context) {}
     
-    // Called every frame for logic and drawing
+    // Llamado en cada ciclo de actualización 
     virtual void update(AppContext& context) = 0;
     
-    // Virtual destructor for proper cleanup
+    // Destructor virtual para limpieza adecuada
     virtual ~IScene() {}
 };
 #endif

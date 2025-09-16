@@ -6,17 +6,17 @@
 #include "../Logos.h"
 #include "../SceneManager.h"
 
-// Logo scene for C+
+// Escena de logo/splash al iniciar la app
 class LogoScene : public IScene {
 private:
     unsigned long startTime;
-    static const unsigned long SPLASH_DURATION = 3000; // 3 seconds
+    static const unsigned long SPLASH_DURATION = 3000; // 3 segundos
 
 public:
     void enter(AppContext& context) override {
         startTime = millis();
-        
-        // Draw the logo once when entering the scene
+
+        // Dibujar el logo una vez al entrar en la escena
         context.u8g2.clearBuffer();
         context.u8g2.drawXBM(32, 0, 128, 64, cmas);
         context.u8g2.sendBuffer();
@@ -26,7 +26,7 @@ public:
         unsigned long currentTime = millis();
         unsigned long elapsedTime = currentTime - startTime;
 
-        // Switch scene after splash duration
+        // Cambiar de escena después de la duración del splash
         if (elapsedTime > SPLASH_DURATION) {
             SceneManager::setScene("home", context);
         }

@@ -5,9 +5,10 @@
 #include <string>
 #include "Scenes/IScene.h"
 
-// Forward declaration of AppContext
+// Declaración adelantada de AppContext
 struct AppContext;
 
+// Clase para manejar escenas
 class SceneManager {
 private:
     static std::map<std::string, IScene*> scenes;
@@ -24,7 +25,11 @@ public:
         if (it != scenes.end()) {
             currentScene = it->second;
             currentSceneName = name;
-            currentScene->enter(context); // Call enter method of new scene
+            currentScene->enter(context); // Llamar método enter de la nueva escena
+        }
+        else {
+            Serial.print("Escena no encontrada: ");
+            Serial.println(name.c_str());
         }
     }
 
@@ -38,5 +43,11 @@ public:
         return currentSceneName;
     }
 };
+
+// Definiciones de miembros
+// inline para que funcionen con static
+inline std::map<std::string, IScene*> SceneManager::scenes;
+inline IScene* SceneManager::currentScene = nullptr;
+inline std::string SceneManager::currentSceneName = "";
 
 #endif

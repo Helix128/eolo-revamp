@@ -2,32 +2,29 @@
 #include <U8g2lib.h>
 #include <Wire.h>
 
-// Core application context and scene management
+// Módulos principales 
 #include "AppContext.h"
 #include "SceneManager.h"
 #include "SceneRegistry.h"
 
-// --- Global Instances ---
+// Instancias globales
 DisplayModel u8g2(U8G2_R0, SCL_PIN, SDA_PIN);
-AppContext context(u8g2); // The single brain of the app!
+AppContext context(u8g2); // Aquí se procesa toda la lógica
 
 void setup() {
-  // Initialize all hardware and services through AppContext
+  // Inicialización del contexto de la app
   context.begin();
 
-  // Register all available scenes
+  // Registrar todas las escenas (SceneRegistry)
   registerAllScenes();
   
-  // Set initial scene
+  // Carga la escena inicial (splash)
   SceneManager::setScene("splash", context);
 }
 
 void loop() {
-  // Update application state
+  // Actualizar el contexto de la app y la escena actual
   context.update();
-  
-  // Update current scene
   SceneManager::update(context);
-  
   delay(33); // ~30 FPS
 }

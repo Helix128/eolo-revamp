@@ -4,15 +4,15 @@
 #include "SceneManager.h"
 #include "Scenes/LogoScene.h"
 #include "Scenes/HomeScene.h"
-#include "Scenes/SetFlowScene.h"
+#include "Scenes/FlujoScene.h"
 
-// Function to register all scenes with the SceneManager
+// Función para registrar todas las escenas con el SceneManager
 void registerAllScenes() {
     SceneManager::addScene("splash", new LogoScene());
     SceneManager::addScene("home", new HomeScene());
-    SceneManager::addScene("setflow", new SetFlowScene());
+    SceneManager::addScene("flujo", new FlujoScene());
     
-    Serial.println("All scenes registered");
+    Serial.println("Todas las escenas registradas");
 }
 
 #endif

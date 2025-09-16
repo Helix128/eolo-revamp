@@ -6,71 +6,71 @@
 #include "../SceneManager.h"
 #include "../GUI.h"
 
-// Home scene with menu options
+// Escena principal con opciones de menú
 class HomeScene : public IScene
 {
 private:
-    int lastEncoderValue = 0;
+    int ultimoValorEncoder = 0;
 
 public:
     void enter(AppContext& context) override {
-        // Reset selection when entering the scene
+        // Reiniciar selección al entrar a la escena
         context.seleccionMenu = 0;
         context.input.resetCounter();
-        lastEncoderValue = 0;
+        ultimoValorEncoder = 0;
     }
 
     void update(AppContext& context) override {
-        // Update selection based on encoder
-        int optionCount = 4; // Increased to 4 options
-        context.seleccionMenu = ((int)context.input.encoderCounter / 4) % optionCount;
-        
-        // Handle button press
+        // Actualizar selección basado en encoder
+        int cantidadOpciones = 3;
+        context.seleccionMenu = ((int)context.input.encoderCounter / 4) % cantidadOpciones;
+
+        // Manejar presión del botón
         if (context.input.buttonPressed) {
             context.input.resetButton();
             
-            // Handle menu selection
+            // Manejar selección del menú
             switch (context.seleccionMenu) {
                 case 0:
                     // "Iniciar captura inmediata"
                     context.startCapture();
-                    Serial.println("Starting immediate capture");
+                    Serial.println("Iniciando captura inmediata");
+                    SceneManager::setScene("flujo", context);
                     break;
                 case 1:
                     // "Continuar sesion anterior"
-                    Serial.println("Continue previous session selected");
+                    // TODO cargar flujo previo (?) confirmar con sebas
+                    // TODO crear dashboard
+                    Serial.println("Continuar sesión anterior seleccionado");
+                    SceneManager::setScene("dashboard", context);
                     break;
                 case 2:
                     // "Iniciar nueva sesion"
-                    Serial.println("Start new session selected");
+                    Serial.println("Iniciar nueva sesión seleccionado");
+                    SceneManager::setScene("flujo", context);
                     break;
-                case 3:
-                    // "Ajustar flujo objetivo"
-                    SceneManager::setScene("setflow", context);
-                    return;
             }
         }
 
-        // Draw the scene
+        // Dibujar la escena
         context.u8g2.clearBuffer();
         GUI::displayHeader(context);
         
-        // Draw selection arrow with animation
-        int selectAnim = (millis() % 600) / 400;
+        // Dibujar flecha de selección con animación
+        int animSeleccion = (millis() % 600) / 400;
         context.u8g2.setFont(u8g2_font_twelvedings_t_all);
-        context.u8g2.drawStr(selectAnim, 27 + context.seleccionMenu * 12, ">");
+        context.u8g2.drawStr(animSeleccion, 27 + context.seleccionMenu * 12, ">");
         
-        // Draw menu options
+        // Dibujar opciones del menú
         context.u8g2.setFont(u8g2_font_fivepx_tr);
-        const char* options[] = {
+        const char* opciones[] = {
             "Iniciar captura inmediata", 
             "Continuar sesion anterior", 
             "Iniciar nueva sesion",
-            "Ajustar flujo objetivo"
         };
         
-        for (int i = 0; i < 4; i++) {
-            context.u8g2.drawStr(12, 25 + i * 12, options[i]);
+        for (int i = 0; i < cantidadOpciones; i++) {
+            context.u8g2.drawStr(12, 25 + i * 12, opciones[i]);
         }
         
         context.u8g2.sendBuffer();

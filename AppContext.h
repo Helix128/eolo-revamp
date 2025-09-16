@@ -10,7 +10,7 @@
 #include "Config.h"
 #include <U8g2lib.h>
 
-// Define motor pins (you may need to adjust these based on your hardware)
+// Pines del motor
 #define PIN_MOTOR_A 14
 #define PIN_MOTOR_B 12
 
@@ -30,10 +30,10 @@ struct AppContext {
     unsigned long duracionCaptura = 3600;        // Capture duration in seconds
     bool usarSensorPM = true;                     // Whether to use PM sensor
     
-    // UI state
-    int seleccionMenu = 0;                        // Current menu selection
+    // Estado de la interfaz (para selectores de opciones)
+    int seleccionMenu = 0;                    
     
-    // Session state
+    // Estado de la sesión
     bool capturaActiva = false;                   // Whether capture is currently active
     unsigned long tiempoTranscurrido = 0;         // Elapsed time in current session
 
