@@ -1,12 +1,12 @@
 #ifndef SCENEMANAGER_H
 #define SCENEMANAGER_H
 
-#include <U8g2lib.h>
-#include "Scenes/IScene.h"
-#include "Config.h"
-#include "Input.h"
 #include <map>
 #include <string>
+#include "Scenes/IScene.h"
+
+// Forward declaration of AppContext
+struct AppContext;
 
 class SceneManager {
 private:
@@ -19,17 +19,18 @@ public:
         scenes[name] = scene;
     }
 
-    static void setScene(const std::string& name) {
+    static void setScene(const std::string& name, AppContext& context) {
         auto it = scenes.find(name);
         if (it != scenes.end()) {
             currentScene = it->second;
             currentSceneName = name;
+            currentScene->enter(context); // Call enter method of new scene
         }
     }
 
-    static void draw(DisplayModel& u8g2, Input& input) {
+    static void update(AppContext& context) {
         if (currentScene != nullptr) {
-            currentScene->draw(u8g2, input);
+            currentScene->update(context);
         }
     }
 
@@ -37,10 +38,5 @@ public:
         return currentSceneName;
     }
 };
-
-// Static member definitions
-std::map<std::string, IScene*> SceneManager::scenes;
-IScene* SceneManager::currentScene = nullptr;
-std::string SceneManager::currentSceneName = "";
 
 #endif

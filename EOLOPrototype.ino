@@ -2,47 +2,32 @@
 #include <U8g2lib.h>
 #include <Wire.h>
 
-// Módulos del proyecto
-#include "Logos.h"
-#include "Input.h" 
-#include "Config.h" 
-#include "Logger.h" 
-#include "Motor.h" 
-#include "Battery.h"
-#include "Plantower.h"
+// Core application context and scene management
+#include "AppContext.h"
 #include "SceneManager.h"
+#include "SceneRegistry.h"
 
-// Escenas de la interfaz
-#include "Scenes/IScene.h" // Escena "base"
-#include "Scenes/LogoScene.h"
-
-// Definición del display
-// (DisplayModel definido en Config.h, se reemplaza por el modelo real de pantalla)
+// --- Global Instances ---
 DisplayModel u8g2(U8G2_R0, SCL_PIN, SDA_PIN);
-
-// Definición del input manager (maneja comunicación con driver del encoder/botón)
-Input input;
-
-// Batería del EOLO
-Battery battery;
+AppContext context(u8g2); // The single brain of the app!
 
 void setup() {
-  Serial.begin(115200);
-  while (!Serial) delay(10); // Espera a que se abra el monitor serial
-  Serial.println("EOLO Boot");
+  // Initialize all hardware and services through AppContext
+  context.begin();
 
-  // Inicializa el input y el display
-  input.begin();
-  u8g2.begin();
+  // Register all available scenes
+  registerAllScenes();
   
-  // Inicializa las escenas y muestra el splash con el logo
-  SceneManager::addScene("splash", new LogoScene());
-  SceneManager::addScene("home", new HomeScene());
-  SceneManager::setScene("splash");
+  // Set initial scene
+  SceneManager::setScene("splash", context);
 }
 
 void loop() {
-  input.poll();
-  SceneManager::draw(u8g2, input);
-  delay(33); // "30" FPS
+  // Update application state
+  context.update();
+  
+  // Update current scene
+  SceneManager::update(context);
+  
+  delay(33); // ~30 FPS
 }

@@ -1,14 +1,20 @@
 #ifndef ISCENE_H
 #define ISCENE_H
 
-#include "../Config.h"
-#include <U8g2lib.h>
-#include "../Input.h"
+// Forward declaration of AppContext to avoid circular dependencies
+struct AppContext;
 
-// Interfaz para definir una escena en la interfaz
+// Interface for defining a scene in the interface
 class IScene
 {
-    public: 
-    virtual void draw(DisplayModel &u8g2, Input &input) = 0;
+public: 
+    // Called when entering the scene (for one-time initialization)
+    virtual void enter(AppContext& context) {}
+    
+    // Called every frame for logic and drawing
+    virtual void update(AppContext& context) = 0;
+    
+    // Virtual destructor for proper cleanup
+    virtual ~IScene() {}
 };
 #endif

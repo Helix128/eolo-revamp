@@ -11,6 +11,9 @@
 
 const char* logFile = "log.csv";
 
+// Forward declaration
+struct AppContext;
+
 class Logger {
 public:
     static bool begin() {
@@ -20,6 +23,36 @@ public:
         }
         Serial.println("SD inicializada");
         return true;
+    }
+    
+    // Log a data snapshot using AppContext
+    void logSnapshot(AppContext& context) {
+        File dataFile = SD.open(logFile, FILE_APPEND);
+        if (dataFile) {
+            // Log timestamp
+            dataFile.print(millis());
+            dataFile.print(",");
+            
+            // Log target flow
+            dataFile.print(context.flujoObjetivo);
+            dataFile.print(",");
+            
+            // Log battery level
+            dataFile.print(context.getBatteryPercentage());
+            dataFile.print(",");
+            
+            // Log capture status
+            dataFile.print(context.capturaActiva ? 1 : 0);
+            dataFile.print(",");
+            
+            // Log elapsed time
+            dataFile.println(context.tiempoTranscurrido);
+            
+            dataFile.close();
+            Serial.println("Data logged to SD");
+        } else {
+            Serial.println("Error opening log file");
+        }
     }
 };
 

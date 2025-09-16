@@ -5,6 +5,8 @@
 #define PT_RX 17
 #define PT_PWR 4
 
+// TODO cuando tenga el plantower funcionando
+// implementar lectura de datos y parseo
 class Plantower {
 public:
     void begin() {
