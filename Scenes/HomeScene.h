@@ -23,7 +23,7 @@ public:
     void update(AppContext& context) override {
         // Actualizar selección basado en encoder
         int cantidadOpciones = 3;
-        context.seleccionMenu = ((int)context.input.encoderCounter / 4) % cantidadOpciones;
+        context.seleccionMenu = ((int)context.input.encoderCounter) % cantidadOpciones;
 
         // Manejar presión del botón
         if (context.input.buttonPressed) {
@@ -57,7 +57,7 @@ public:
         GUI::displayHeader(context);
         
         // Dibujar flecha de selección con animación
-        int animSeleccion = (millis() % 600) / 400;
+        int animSeleccion = (millis() % 500) / 200;
         context.u8g2.setFont(u8g2_font_twelvedings_t_all);
         context.u8g2.drawStr(animSeleccion, 27 + context.seleccionMenu * 12, ">");
         

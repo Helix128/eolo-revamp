@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// CONFIGURACIONES GENERALES DEL PROGRAMA
+
 // Modelo de pantalla a usar en U8G2 (default U8G2_SSD1309_128x64_NONAME2_F_HW_I2C)
 #define DisplayModel U8G2_SSD1309_128X64_NONAME2_F_HW_I2C 
 

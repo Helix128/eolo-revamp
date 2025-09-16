@@ -1,0 +1,23 @@
+#ifndef HOME_SCENE_H
+#define HOME_SCENE_H
+
+#include "IScene.h"
+#include "../AppContext.h"
+#include "../SceneManager.h"
+#include "../GUI.h"
+
+// Escena principal con opciones de menú
+class HoraScene : public IScene
+{
+public:
+    void enter(AppContext& context) override {
+        context.input.resetCounter();
+    }
+
+    void update(AppContext& context) override {
+        context.u8g2.clearBuffer();
+        GUI::displayHeader(context);
+        context.u8g2.sendBuffer();
+    }
+};
+#endif
