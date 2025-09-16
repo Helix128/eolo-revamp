@@ -1,10 +1,14 @@
-#ifndef ISCREEN_H
-#define ISCREEN_H
+#ifndef ISCENE_H
+#define ISCENE_H
+
+#include "../Config.h"
+#include <U8g2lib.h>
+#include "../Input.h"
 
 // Interfaz para definir una escena en la interfaz
 class IScene
 {
     public: 
-    virtual void draw(U8g2 &u8g2, Input &input) = 0;
+    virtual void draw(DisplayModel &u8g2, Input &input) = 0;
 };
 #endif

@@ -17,6 +17,10 @@ public:
     Wire.begin(SDA_PIN, SCL_PIN); // Inicializa Wire para comunicación I2C
     Wire.setClock(100000); // 100kHz
     Serial.println("Encoder inicializado");
+    delay(100);
+    resetButton();
+    resetCounter();
+    readEncoderData(); // Leer estado inicial
   }
 
   // Función helper para actualizar datos del encoder

@@ -46,8 +46,9 @@ public:
     if(powerPct>100) powerPct = 100;
     else if(powerPct<0) powerPct = 0;
     float targetPWM = (float)MAX_PWM;
-    targetPWM*=powerPCT;
-    setPWM((int)targetPWM)
+    targetPWM*=powerPct;
+    setPWM((int)targetPWM);
   }
-}
+
+};
 #endif
