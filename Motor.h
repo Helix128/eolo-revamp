@@ -4,6 +4,7 @@
 // Valor máximo de PWM de ESP32
 #define MAX_PWM 1023
 
+// Clase para manejar los motores de vacío DC
 class MotorManager {
 public:
   // Pines de PWM para motores

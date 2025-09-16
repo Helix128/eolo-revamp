@@ -15,4 +15,8 @@
 #define CMD_RESET_COUNTER 0x01
 #define CMD_RESET_BUTTON  0x02
 
+// Pines del motor
+#define PIN_MOTOR_A 14
+#define PIN_MOTOR_B 12
+
 #endif // CONFIG_H

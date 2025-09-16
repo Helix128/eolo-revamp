@@ -4,24 +4,26 @@
 // Include all modules and services
 #include "Input.h"
 #include "Motor.h"
+#include "RTCManager.h"
+#include "FlowSensor.h"
 #include "Plantower.h"
+#include "BMESensor.h"
 #include "Battery.h"
 #include "Logger.h"
 #include "Config.h"
 #include <U8g2lib.h>
 
-// Pines del motor
-#define PIN_MOTOR_A 14
-#define PIN_MOTOR_B 12
-
-struct AppContext {
+typedef struct AppContext {
     // --- MÓDULOS DE HARDWARE ---
     DisplayModel& u8g2;           // Referencia al display
     Input input;                  // Input manager (encoder/botón)
     MotorManager motor;           // Control de motor
+    FlowSensor flowSensor;    // Sensor de flujo
     Plantower plantower;          // Sensor Plantower
+    BMESensor bme;              // Sensor BME280
     Battery battery;              // Monitoreo del nivel de batería
     Logger logger;                // Registro de datos en SD
+    RTCManager rtc;               // Manejador del RTC
 
     // --- ESTADO DE LA APLICACIÓN ---
     // Flujo y temporización de la aplicación
@@ -52,7 +54,10 @@ struct AppContext {
         u8g2.begin();
         input.begin();
         motor.begin();
+        flowSensor.begin();
+        bme.begin();
         plantower.begin();
+        rtc.begin();
         
         // Inicializa el datalogger
         if (logger.begin()) {
@@ -105,6 +110,6 @@ struct AppContext {
         int rawLevel = battery.getLevel();
         return map(rawLevel, 0, 255, 0, 100);
     }
-};
+}AppContext;
 
 #endif

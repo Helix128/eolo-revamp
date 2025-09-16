@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include "Config.h"
 
+// Clase para manejar el input del encoder con botón
 class Input {
 public:
 
