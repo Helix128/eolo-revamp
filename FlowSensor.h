@@ -2,6 +2,7 @@
 #define FLOW_SENSOR_H
 
 // Clase para manejar el sensor de flujo de aire
+// Sensor de flujo cuadradito azul
 // TODO
 class FlowSensor {
 public:

@@ -1,22 +1,25 @@
 #ifndef BMESENSOR_H
 #define BMESENSOR_H
 
-
+#include <Adafruit_BME280.h>
 // Clase para manejar el sensor BME280 (temperatura, humedad, presión)
 class BMESensor {
+private:
+    Adafruit_BME280 bme;
+
 public:
     float temperature = 0.0;
     float humidity = 0.0;
     float pressure = 0.0;
+    
     void begin() {
-        // Inicialización del sensor (simulada)
+        bme.begin();
     }
 
     void readData() {
-        // Simulación de lectura de datos
-        temperature = 25.0; // Placeholder
-        humidity = 50.0;    // Placeholder
-        pressure = 1013.25; // Placeholder
+        temperature = bme.readTemperature();
+        humidity = bme.readHumidity();
+        pressure = bme.readPressure() / 100.0F; // Convertir Pa a hPa
     }
 };
 
