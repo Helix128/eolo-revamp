@@ -23,6 +23,11 @@ public:
     resetButton();
     resetCounter();
     readEncoderData(); // Leer estado inicial
+
+    // Inicializar estados previos para detección de cambios
+    prevEncoderCounterRaw = encoderCounter;
+    prevButtonRaw = buttonPressed;
+    lastButtonChangeMs = millis();
   }
 
   // Función helper para actualizar datos del encoder
@@ -39,6 +44,7 @@ public:
     if (Wire.endTransmission() == 0)
     {
       encoderCounter = 0;
+      prevEncoderCounterRaw = 0;
     }
   }
 
@@ -50,7 +56,56 @@ public:
     if (Wire.endTransmission() == 0)
     {
       buttonPressed = false;
+      prevButtonRaw = false;
     }
+  }
+
+  // --- Nuevos helpers públicos ---
+  // Devuelven true una vez por cada movimiento detectado en la dirección indicada.
+  bool encoderMovedRight()
+  {
+    // Si hubo cambio y la dirección indica movimiento horario (asumimos 1 = horario)
+    if (encoderCounter != prevEncoderCounterRaw && encoderDirection == 1)
+    {
+      prevEncoderCounterRaw = encoderCounter;
+      return true;
+    }
+    return false;
+  }
+
+  bool encoderMovedLeft()
+  {
+    if (encoderCounter != prevEncoderCounterRaw && encoderDirection != 1)
+    {
+      prevEncoderCounterRaw = encoderCounter;
+      return true;
+    }
+    return false;
+  }
+
+  // Devuelve true solo al detectar la transición no->sí del botón (con debounce simple)
+  bool buttonJustPressed()
+  {
+    const unsigned long DEBOUNCE_MS = 50;
+    if (buttonPressed != prevButtonRaw)
+    {
+      // valor cambió; aplicar debounce temporal
+      unsigned long now = millis();
+      if (now - lastButtonChangeMs >= DEBOUNCE_MS)
+      {
+        // Confirmar cambio estable
+        bool justPressed = buttonPressed && !prevButtonRaw;
+        prevButtonRaw = buttonPressed;
+        lastButtonChangeMs = now;
+        return justPressed;
+      }
+    }
+    else
+    {
+      // No hay cambio: actualizar timestamp para evitar bloqueos en flancos siguientes
+      lastButtonChangeMs = millis();
+    }
+    return false;
   }
 
 private:
@@ -84,6 +139,11 @@ private:
       }
     }
   }
+
+  // Variables para detección de flancos / debounce
+  byte prevEncoderCounterRaw = 0;
+  bool prevButtonRaw = false;
+  unsigned long lastButtonChangeMs = 0;
 };
 
 #endif // INPUT_H

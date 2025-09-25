@@ -23,23 +23,12 @@ public:
     }
 
     void update(AppContext& context) override {
-        // Leer raw y calcular delta con detección de wrap (0..255)
-        uint8_t raw = context.input.encoderCounter;
-        int8_t delta = (int8_t)(raw - context.prevEncoderRaw);
-        if (delta > 127) delta -= 256;
-        else if (delta < -127) delta += 256;
-        context.prevEncoderRaw = raw;
-
-        // Si cambio de selección, inicializar encoderVirtual con ese valor
-        if (context.seleccionMenu == 0) {
-            // editar inicio
-            // si no se ha movido desde la entrada, encoderVirtual ya tiene valor; aplicamos delta
-            context.encoderVirtual += delta;
-        } else if (context.seleccionMenu == 1) {
-            // editar fin
-            // si acabamos de pasar a esta selección el encoderVirtual debe sincronizarse
-            // pero para simplicidad: cuando se incrementa seleccion se resetea prev raw y encoderVirtual
-            context.encoderVirtual += delta;
+        // Usar helpers del Input para moverse por minutos (uno por paso)
+        if (context.input.encoderMovedRight()) {
+            context.encoderVirtual++;
+        }
+        if (context.input.encoderMovedLeft()) {
+            context.encoderVirtual--;
         }
 
         // Limitar rango 0..1439 (minutos del día)
@@ -96,8 +85,8 @@ public:
         context.u8g2.drawStr(10, 95, "Presione boton para siguiente");
         context.u8g2.sendBuffer();
 
-        // Botón: avanzar selección / confirmar
-        if (context.input.buttonPressed) {
+        // Botón: avanzar selección / confirmar (usar helper con debounce)
+        if (context.input.buttonJustPressed()) {
             context.input.resetButton();
             context.seleccionMenu++;
             if (context.seleccionMenu > 1) {
@@ -121,4 +110,5 @@ public:
         }
     }
 };
+
 #endif // HORA_SCENE_H
