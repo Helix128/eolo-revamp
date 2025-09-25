@@ -2,14 +2,14 @@
 #define APP_CONTEXT_H
 
 // Incluye TODOS los módulos
-#include "Input.h"
-#include "Motor.h"
-#include "RTCManager.h"
-#include "FlowSensor.h"
-#include "Plantower.h"
-#include "BMESensor.h"
-#include "Battery.h"
-#include "Logger.h"
+#include "Board/Input.h"
+#include "Effectors/Motor.h"
+#include "Board/RTCManager.h"
+#include "Sensors/AFM07.h"
+#include "Sensors/Plantower.h"
+#include "Sensors/BME280.h"
+#include "Board/Battery.h"
+#include "Board/Logger.h"
 #include "Config.h"
 #include <U8g2lib.h>
 
@@ -18,9 +18,9 @@ typedef struct AppContext {
   DisplayModel& u8g2;     // Referencia al display
   Input input;            // Manejo entradas (encoder/botón)
   MotorManager motor;     // Control de motor
-  FlowSensor flowSensor;  // Sensor de flujo
+  AFM07 flowSensor;  // Sensor de flujo
   Plantower plantower;    // Sensor Plantower
-  BMESensor bme;          // Sensor BME280
+  BME280 bme;          // Sensor BME280
   Battery battery;        // Monitoreo del nivel de batería
   Logger logger;          // Registro de datos en SD
   RTCManager rtc;         // Manejo RTC
@@ -78,7 +78,7 @@ typedef struct AppContext {
       tiempoTranscurrido = (millis() - horaInicioCaptura) / 1000;
 
       // Termina la captura si se ha alcanzado la duración
-      if (tiempoTranscurrido >= duracionCaptura) {
+      if (tiempoTranscurrido >= horaFinCaptura-horaInicioCaptura) {
         stopCapture();
       }
     }

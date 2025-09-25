@@ -16,12 +16,20 @@
 
 struct AppContext; // Declaración adelantada para evitar dependencias circulares
 
+enum SDStatus{
+    OK,
+    WRITING,
+    ERROR
+}
+
 // Clase para manejar el datalogger en tarjeta SD
 class Logger {
 public:
+    SDStatus status = OK;
     static bool begin() {
         if (!SD.begin(SD_CS_PIN)) {
             Serial.println("Fallo al inicializar SD");
+            status = ERROR;
             return false;
         }
         Serial.println("SD inicializada");

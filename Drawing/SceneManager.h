@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "Scenes/IScene.h"
+#include "../Scenes/IScene.h"
 
 // Declaración adelantada de AppContext
 struct AppContext;

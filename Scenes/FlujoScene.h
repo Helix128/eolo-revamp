@@ -3,8 +3,8 @@
 
 #include "IScene.h"
 #include "../AppContext.h"
-#include "../SceneManager.h"
-#include "../GUI.h"
+#include "../Drawing/SceneManager.h"
+#include "../Drawing/GUI.h"
 
 // Escena para configurar el flujo objetivo
 class FlujoScene : public IScene {
@@ -33,10 +33,10 @@ public:
             Serial.print("Flujo configurado a: ");
             Serial.println(context.flujoObjetivo);
             // TODO -> crear dashboard
-            if(context.capturaActiva) // si está en modo activo
+            if (context.capturaActiva) { // si está en modo activo
                 SceneManager::setScene("dashboard", context); // captura ahora, no pide hora
                 return;
-            else{ // pide hora para capturar después
+            } else { // pide hora para capturar después
                 SceneManager::setScene("hora", context);
                 return;
             }

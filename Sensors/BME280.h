@@ -3,7 +3,7 @@
 
 #include <Adafruit_BME280.h>
 // Clase para manejar el sensor BME280 (temperatura, humedad, presión)
-class BMESensor {
+class BME280 {
 private:
     Adafruit_BME280 bme;
 

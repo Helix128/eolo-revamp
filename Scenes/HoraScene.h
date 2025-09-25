@@ -3,8 +3,8 @@
 
 #include "IScene.h"
 #include "../AppContext.h"
-#include "../SceneManager.h"
-#include "../GUI.h"
+#include "../Drawing/SceneManager.h"
+#include "../Drawing/GUI.h"
 
 // Escena principal con opciones de menú
 class HoraScene : public IScene

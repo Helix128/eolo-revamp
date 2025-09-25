@@ -8,6 +8,7 @@
 
 void Logger::capture(AppContext& context) {
     File dataFile = SD.open(logFile, FILE_APPEND);
+    status = WRITING;
     if (dataFile) {
         // Timestamp
         dataFile.print(context.rtc.getTimeString().c_str()); // reemplazar con tiempo real de rtc
@@ -51,7 +52,9 @@ void Logger::capture(AppContext& context) {
         dataFile.close();
 
         Serial.println("Datos guardados en SD");
+        status = OK;
     } else {
         Serial.println("Error guardando datos en SD");
+        status = ERROR;
     }
 }

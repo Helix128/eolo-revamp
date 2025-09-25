@@ -3,8 +3,8 @@
 
 #include "IScene.h"
 #include "../AppContext.h"
-#include "../Logos.h"
-#include "../SceneManager.h"
+#include "../Drawing/Logos.h"
+#include "../Drawing/SceneManager.h"
 
 // Escena de logo/splash al iniciar la app
 class LogoScene : public IScene {

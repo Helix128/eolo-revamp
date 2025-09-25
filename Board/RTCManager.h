@@ -2,6 +2,7 @@
 #define RTC_H
 
 #include <Arduino.h>
+#include <RTClib.h>
 
 // Clase para manejar el RTC
 class RTCManager{

@@ -4,8 +4,8 @@
 
 // Módulos principales 
 #include "AppContext.h"
-#include "SceneManager.h"
-#include "SceneRegistry.h"
+#include "Drawing/SceneManager.h"
+#include "Drawing/SceneRegistry.h"
 
 // Instancias globales
 DisplayModel u8g2(U8G2_R0, SCL_PIN, SDA_PIN);
