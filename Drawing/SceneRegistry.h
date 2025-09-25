@@ -5,14 +5,23 @@
 #include "../Scenes/LogoScene.h"
 #include "../Scenes/HomeScene.h"
 #include "../Scenes/FlujoScene.h"
+#include "../Scenes/HoraScene.h"
+#include "../Scenes/MenuScene.h"
+#include "../Scenes/PlantowerScene.h"
+#include "../Scenes/EsperaScene.h"
+#include "../Scenes/DashboardScene.h"
 
 // Función para registrar todas las escenas con el SceneManager
 void registerAllScenes()
 {
     SceneManager::addScene("splash", new LogoScene());
     SceneManager::addScene("home", new HomeScene());
-    SceneManager::addScene("flujo", new FlujoScene());
-    // SceneManager::addScene("dashboard", new DashboardScene()); // TODO implementar dashboard
+    SceneManager::addScene("flujo", new FlujoScene()); 
+    SceneManager::addScene("hora", new HoraScene());
+    SceneManager::addScene("menu", new MenuScene());
+    SceneManager::addScene("plantower", new PlantowerScene());
+    SceneManager::addScene("espera", new EsperaScene());
+    SceneManager::addScene("dashboard", new DashboardScene());
     Serial.println("Todas las escenas registradas");
 }
 

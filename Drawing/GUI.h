@@ -19,28 +19,28 @@ public:
 
         // Tiempo
         char timeStr[6];
-        context.getTimeString(timeStr, sizeof(timeStr));
+        context.rtc.getTimeString();
 
-        u8g2.setFont(u8g2_font_TimesNewPixel_tr);
+        context.u8g2.setFont(u8g2_font_fivepx_tr);
+
         // Nombre del dispositivo
-        u8g2.drawStr(51, 11, "eolo");
-        u8g2.setFont(u8g2_font_fivepx_tr);
-
+        context.u8g2.drawStr(51, 11, "eolo");
+      
         // Estado de la SD
         char* sdStatus = "OK!";
         if (Logger::status == SD_ERROR)
             sdStatus = "ERR!";
         else if (Logger::status == SD_WRITING)
             sdStatus = "I/O";
-        u8g2.drawStr(111, 9, sdStatus);
-        u8g2.drawStr(98, 9, "SD:");
+        context.u8g2.drawStr(111, 9, sdStatus);
+        context.u8g2.drawStr(98, 9, "SD:");
 
         // Baterías
-        u8g2.drawFrame(89, 1, 6, 11);
-        u8g2.drawFrame(82, 1, 6, 11);
+        context.u8g2.drawFrame(89, 1, 6, 11);
+        context.u8g2.drawFrame(82, 1, 6, 11);
 
         // Línea separadora
-        u8g2.drawLine(0, 13, 127, 13);
+        context.u8g2.drawLine(0, 13, 127, 13);
     }
 };
 

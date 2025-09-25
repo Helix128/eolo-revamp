@@ -36,6 +36,7 @@ public:
             context.input.resetButton();
             Serial.print("Flujo configurado a: ");
             Serial.println(context.flujoObjetivo);
+            
             // TODO -> crear dashboard
             if (context.capturaActiva)
             {                                                 // si está en modo activo

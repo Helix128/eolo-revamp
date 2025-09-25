@@ -36,17 +36,20 @@ typedef struct AppContext
   // Estado de la interfaz (para selectores de opciones)
   int seleccionMenu = 0;
 
+  // Encoder virtual para evitar el límite 0..255 del encoder físico
+  int encoderVirtual = 0;     // minutos del día (0..1439) durante edición
+  uint8_t prevEncoderRaw = 0; // último valor bruto (0..255) leído
+
   // Estado de la sesión
   bool capturaActiva = false;           // Whether capture is currently active
   unsigned long tiempoTranscurrido = 0; // Elapsed time in current session
 
-  // Constructor: Initialize modules and receive display reference
+  // Constructor
   AppContext(DisplayModel &display)
       : u8g2(display), motor(PIN_MOTOR_A, PIN_MOTOR_B)
   {
   }
 
-  // Method to initialize all systems
   void begin()
   {
     Serial.begin(115200);
@@ -61,7 +64,7 @@ typedef struct AppContext
     flowSensor.begin();
     bme.begin();
     plantower.begin();
-    rtc.begin();
+    rtc.begin(); 
 
     // Inicializa el datalogger
     if (logger.begin())
@@ -110,7 +113,7 @@ typedef struct AppContext
   }
 
   // Formatea tiempo transcurrido como HH:MM
-  void getTimeString(char *buffer, size_t bufferSize)
+  void getElapsedTimeString(char *buffer, size_t bufferSize)
   {
     unsigned long currentTime = millis() / 1000;
     int hours = (currentTime / 3600) % 24;
