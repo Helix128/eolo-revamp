@@ -4,7 +4,7 @@
 // CONFIGURACIONES GENERALES DEL PROGRAMA
 
 // Modelo de pantalla a usar en U8G2 (default U8G2_SSD1309_128x64_NONAME2_F_HW_I2C)
-#define DisplayModel U8G2_SSD1309_128X64_NONAME2_F_HW_I2C 
+#define DisplayModel U8G2_SSD1309_128X64_NONAME2_F_HW_I2C
 
 // Pines I2C
 #define SDA_PIN 21
@@ -15,7 +15,7 @@
 
 // Comandos para el ATTINY85
 #define CMD_RESET_COUNTER 0x01
-#define CMD_RESET_BUTTON  0x02
+#define CMD_RESET_BUTTON 0x02
 
 // Pines del motor
 #define PIN_MOTOR_A 14

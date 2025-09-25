@@ -5,12 +5,15 @@
 #include <RTClib.h>
 
 // Clase para manejar el RTC
-class RTCManager{
+class RTCManager
+{
 public:
-    void begin() {
+    void begin()
+    {
         // Inicialización del RTC (simulada)
     }
-    String getTimeString() {
+    String getTimeString()
+    {
         // Simulación de obtención de la hora actual
         return "12:00";
     }

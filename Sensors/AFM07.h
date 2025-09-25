@@ -21,40 +21,48 @@ private:
     HardwareSerial ModbusSerial;
     ModbusMaster node;
 
-    static void preTransmission() { 
+    static void preTransmission()
+    {
         digitalWrite(RS485_DE_RE_PIN, HIGH); // Configura módulo RS485 en modo transmisión
     }
 
-    static void postTransmission() {
+    static void postTransmission()
+    {
         digitalWrite(RS485_DE_RE_PIN, LOW); // Configura módulo RS485 en modo recepción
     }
 
 public:
-    AFM07() : ModbusSerial(2) {
+    AFM07() : ModbusSerial(2)
+    {
     }
 
     float flow = 0.0;
 
-    void begin() {
+    void begin()
+    {
         pinMode(RS485_DE_RE_PIN, OUTPUT);
         digitalWrite(RS485_DE_RE_PIN, LOW); // Configura módulo RS485 en modo recepción
-        
+
         ModbusSerial.begin(9600, SERIAL_8N1, RS485_RX, RS485_TX); //
-        
+
         node.begin(AFM07_ID, ModbusSerial);
         node.preTransmission(preTransmission);
         node.postTransmission(postTransmission);
     }
 
-    void readData() {
+    void readData()
+    {
         uint8_t result;
-        
+
         result = node.readHoldingRegisters(REG_INSTANT_FLOW, 1); // Lee el registro de flujo instantáneo
-        
-        if (result == node.ku8MBSuccess) {
+
+        if (result == node.ku8MBSuccess)
+        {
             uint16_t valorCrudo = node.getResponseBuffer(0);
             flow = (float)valorCrudo / FACTOR_LECTURA;
-        } else {
+        }
+        else
+        {
             flow = -1.0;
         }
     }

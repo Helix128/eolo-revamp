@@ -9,45 +9,53 @@
 struct AppContext;
 
 // Clase para manejar escenas
-class SceneManager {
+class SceneManager
+{
 private:
-    static std::map<std::string, IScene*> scenes;
-    static IScene* currentScene;
+    static std::map<std::string, IScene *> scenes;
+    static IScene *currentScene;
     static std::string currentSceneName;
 
 public:
-    static void addScene(const std::string& name, IScene* scene) {
+    static void addScene(const std::string &name, IScene *scene)
+    {
         scenes[name] = scene;
     }
 
-    static void setScene(const std::string& name, AppContext& context) {
+    static void setScene(const std::string &name, AppContext &context)
+    {
         auto it = scenes.find(name);
-        if (it != scenes.end()) {
+        if (it != scenes.end())
+        {
             currentScene = it->second;
             currentSceneName = name;
             currentScene->enter(context); // Llamar método enter de la nueva escena
         }
-        else {
+        else
+        {
             Serial.print("Escena no encontrada: ");
             Serial.println(name.c_str());
         }
     }
 
-    static void update(AppContext& context) {
-        if (currentScene != nullptr) {
+    static void update(AppContext &context)
+    {
+        if (currentScene != nullptr)
+        {
             currentScene->update(context);
         }
     }
 
-    static const std::string& getCurrentSceneName() {
+    static const std::string &getCurrentSceneName()
+    {
         return currentSceneName;
     }
 };
 
 // Definiciones de miembros
 // inline para que funcionen con static
-inline std::map<std::string, IScene*> SceneManager::scenes;
-inline IScene* SceneManager::currentScene = nullptr;
+inline std::map<std::string, IScene *> SceneManager::scenes;
+inline IScene *SceneManager::currentScene = nullptr;
 inline std::string SceneManager::currentSceneName = "";
 
 #endif

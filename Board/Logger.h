@@ -16,28 +16,35 @@
 
 struct AppContext; // Declaración adelantada para evitar dependencias circulares
 
-enum SDStatus{
-    OK,
-    WRITING,
-    ERROR
-}
+enum SDStatus
+{
+    SD_OK,
+    SD_WRITING,
+    SD_ERROR
+}; // <-- added missing semicolon
 
 // Clase para manejar el datalogger en tarjeta SD
-class Logger {
+class Logger
+{
 public:
-    SDStatus status = OK;
-    static bool begin() {
-        if (!SD.begin(SD_CS_PIN)) {
+    static SDStatus status;
+    static bool begin()
+    {
+        if (!SD.begin(SD_CS_PIN))
+        {
             Serial.println("Fallo al inicializar SD");
-            status = ERROR;
+            Logger::status = SD_ERROR;
             return false;
         }
         Serial.println("SD inicializada");
+        Logger::status = SD_OK;
         return true;
     }
-    
+
     // Solo declaración aquí
-    void capture(AppContext& context);
+    void capture(AppContext &context);
 };
+
+inline SDStatus Logger::status = SD_OK;
 
 #endif

@@ -6,17 +6,18 @@
 #include "Config.h"
 
 // Clase para manejar el input del encoder con botón
-class Input {
+class Input
+{
 public:
-
   // Variables públicas de input
-  volatile byte encoderDirection = 0; // Dirección (Horario/Antihorario)
-  volatile byte encoderCounter = 0; // Contador de pasos del encoder
+  volatile byte encoderDirection = 0;  // Dirección (Horario/Antihorario)
+  volatile byte encoderCounter = 0;    // Contador de pasos del encoder
   volatile bool buttonPressed = false; // Estado del botón del encoder
 
-  void begin() {
+  void begin()
+  {
     Wire.begin(SDA_PIN, SCL_PIN); // Inicializa Wire para comunicación I2C
-    Wire.setClock(100000); // 100kHz
+    Wire.setClock(100000);        // 100kHz
     Serial.println("Encoder inicializado");
     delay(100);
     resetButton();
@@ -25,55 +26,64 @@ public:
   }
 
   // Función helper para actualizar datos del encoder
-  void poll() {
+  void poll()
+  {
     readEncoderData();
   }
 
   // Reiniciar valor del encoder via driver
-  void resetCounter() {
+  void resetCounter()
+  {
     Wire.beginTransmission(ATTINY_ADDRESS);
     Wire.write(CMD_RESET_COUNTER);
-    if (Wire.endTransmission() == 0) {
+    if (Wire.endTransmission() == 0)
+    {
       encoderCounter = 0;
     }
   }
 
   // Reiniciar botón del encoder via driver
-  void resetButton() {
+  void resetButton()
+  {
     Wire.beginTransmission(ATTINY_ADDRESS);
     Wire.write(CMD_RESET_BUTTON);
-    if (Wire.endTransmission() == 0) {
+    if (Wire.endTransmission() == 0)
+    {
       buttonPressed = false;
     }
   }
 
-  
 private:
   // Función interna para leer datos del encoder
-  void readEncoderData() {
-    if (Wire.requestFrom(ATTINY_ADDRESS, 3) == 3) {
+  void readEncoderData()
+  {
+    if (Wire.requestFrom(ATTINY_ADDRESS, 3) == 3)
+    {
       byte prevDirection = encoderDirection;
       byte prevCounter = encoderCounter;
       bool prevButton = buttonPressed;
-      
+
       encoderDirection = Wire.read();
       encoderCounter = Wire.read();
       buttonPressed = (Wire.read() == 1);
-      
-      if (encoderDirection != prevDirection) {
-      Serial.print("Encoder: Direccion cambio a ");
-      Serial.println(encoderDirection);
+
+      if (encoderDirection != prevDirection)
+      {
+        Serial.print("Encoder: Direccion cambio a ");
+        Serial.println(encoderDirection);
       }
-      if (encoderCounter != prevCounter) {
-      Serial.print("Encoder: Contador cambio a ");
-      Serial.println(encoderCounter);
+      if (encoderCounter != prevCounter)
+      {
+        Serial.print("Encoder: Contador cambio a ");
+        Serial.println(encoderCounter);
       }
-      if (buttonPressed != prevButton) {
-      Serial.print("Encoder: Boton pulsado? ");
-      Serial.println(buttonPressed);
+      if (buttonPressed != prevButton)
+      {
+        Serial.print("Encoder: Boton pulsado? ");
+        Serial.println(buttonPressed);
       }
     }
   }
 };
 
-#endif  // INPUT_H
+#endif // INPUT_H
