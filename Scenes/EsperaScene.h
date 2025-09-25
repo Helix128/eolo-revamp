@@ -38,13 +38,12 @@ public:
         context.u8g2.drawStr(8, 68, "FLUJO:");
 
         float flow = 0.0f;
-        // TODO: adaptar según la API real del sensor de flujo
-        flow = context.flowSensor.getFlow();
+        flow = context.flowSensor.flow;
 
         char flowBuf[10];
         snprintf(flowBuf, sizeof(flowBuf), "%.1f", flow);
 
-        context.u8g2.setFont(u8g2_font_fub24_tr);
+        context.u8g2.setFont(u8g2_font_fub42_tr);
         int fw = context.u8g2.getStrWidth(flowBuf);
         context.u8g2.drawStr(w - fw - 8, 64, flowBuf);
 
