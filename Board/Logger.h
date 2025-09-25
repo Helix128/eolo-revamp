@@ -21,7 +21,7 @@ enum SDStatus
     SD_OK,
     SD_WRITING,
     SD_ERROR
-}; // <-- added missing semicolon
+}; 
 
 // Clase para manejar el datalogger en tarjeta SD
 class Logger

@@ -12,8 +12,6 @@ public:
     // Header con batería, hora, SD, nombre del dispositivo
     static void displayHeader(AppContext &context)
     {
-        context.u8g2.setFont(u8g2_font_fivepx_tr);
-
         // Bateria
         char batteryStr[5];
         snprintf(batteryStr, sizeof(batteryStr), "%d%%", context.getBatteryPercentage());
@@ -22,26 +20,27 @@ public:
         // Tiempo
         char timeStr[6];
         context.getTimeString(timeStr, sizeof(timeStr));
-        context.u8g2.drawStr(2, 8, timeStr);
 
-        // Estado de SD (estático por ahora)
-        context.u8g2.drawStr(94, 8, "SD");
-
+        u8g2.setFont(u8g2_font_TimesNewPixel_tr);
         // Nombre del dispositivo
-        context.u8g2.drawStr(55, 8, "eolo");
+        u8g2.drawStr(51, 11, "eolo");
+        u8g2.setFont(u8g2_font_fivepx_tr);
 
-        // Lineaa separadora
-        context.u8g2.drawLine(0, 11, 127, 11);
+        // Estado de la SD
+        char* sdStatus = "OK!";
+        if (Logger::status == SD_ERROR)
+            sdStatus = "ERR!";
+        else if (Logger::status == SD_WRITING)
+            sdStatus = "I/O";
+        u8g2.drawStr(111, 9, sdStatus);
+        u8g2.drawStr(98, 9, "SD:");
 
-        // Ícono de batería (simplificado)
-        context.u8g2.drawLine(102, 1, 91, 1);
-        context.u8g2.drawLine(91, 1, 91, 8);
-        context.u8g2.drawLine(91, 9, 102, 9);
-        context.u8g2.drawLine(103, 8, 103, 8);
-        context.u8g2.drawLine(104, 7, 104, 7);
-        context.u8g2.drawLine(105, 6, 105, 1);
-        context.u8g2.drawLine(103, 1, 103, 1);
-        context.u8g2.drawLine(105, 1, 104, 1);
+        // Baterías
+        u8g2.drawFrame(89, 1, 6, 11);
+        u8g2.drawFrame(82, 1, 6, 11);
+
+        // Línea separadora
+        u8g2.drawLine(0, 13, 127, 13);
     }
 };
 
