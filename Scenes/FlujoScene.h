@@ -26,14 +26,13 @@ public:
         // Actualizar estado desde input
         // Mapear encoder (0-255) al rango de flujo (MIN_FLUJO - MAX_FLUJO)
         float rangoFlujo = MAX_FLUJO - MIN_FLUJO;
-        float nuevoFlujo = MIN_FLUJO + (context.input.encoderCounter / 255.0f) * rangoFlujo;
+    float nuevoFlujo = MIN_FLUJO + (context.input.getEncoderValue() / 255.0f) * rangoFlujo;
 
         context.flujoObjetivo = nuevoFlujo;
 
         // Manejar presión del botón - guardar y regresar a escena anterior
-        if (context.input.buttonPressed)
+            if (context.input.buttonJustPressed())
         {
-            context.input.resetButton();
             Serial.print("Flujo configurado a: ");
             Serial.println(context.flujoObjetivo);
             
@@ -72,6 +71,7 @@ public:
         context.u8g2.drawStr(x + anchoTexto + 5, 50, "L/min");
 
         context.u8g2.sendBuffer();
+                context.input.resetButton();
     }
 };
 

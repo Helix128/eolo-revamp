@@ -23,28 +23,23 @@ enum SDStatus
     SD_ERROR
 }; 
 
-// Clase para manejar el datalogger en tarjeta SD
+// Clase para manejar el datalogger en tarjeta SD.
+// API mínimal: begin() inicializa el subsistema SD y capture() escribe una línea CSV.
 class Logger
 {
 public:
+    // Estado global del SD (útil para mostrar en UI)
     static SDStatus status;
-    static bool begin()
-    {
-        if (!SD.begin(SD_CS_PIN))
-        {
-            Serial.println("Fallo al inicializar SD");
-            Logger::status = SD_ERROR;
-            return false;
-        }
-        Serial.println("SD inicializada");
-        Logger::status = SD_OK;
-        return true;
-    }
 
-    // Solo declaración aquí
+    // Inicializa la tarjeta SD. Devuelve true si OK.
+    // Esta es una función de instancia (no static) para evitar problemas
+    // con el generador de prototipos de Arduino y para permitir futuras
+    // extensiones de estado por-instancia si es necesario.
+    bool begin();
+
+    // Escribe una muestra en la SD (implementación en Logger.cpp)
     void capture(AppContext &context);
 };
 
 inline SDStatus Logger::status = SD_OK;
-
 #endif
