@@ -80,6 +80,12 @@ public:
             // Pequeña retroalimentación por serial
             Serial.print("Plantower uso: ");
             Serial.println(context.usarSensorPM ? "SI" : "NO");
+            // Navegar según si la captura ya está activa
+            if (context.capturaActiva) {
+                SceneManager::setScene("dashboard", context);
+            } else {
+                SceneManager::setScene("espera", context);
+            }
         }
     }
 };

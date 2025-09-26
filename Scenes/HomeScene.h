@@ -24,36 +24,41 @@ public:
     void update(AppContext &context) override
     {
         // Actualizar selección basado en encoder
-        int cantidadOpciones = 3;
-        context.seleccionMenu = ((int)context.input.encoderCounter) % cantidadOpciones;
+    int cantidadOpciones = 3;
+    context.seleccionMenu = ((int)context.input.getEncoderValue()) % cantidadOpciones;
 
-        // Manejar presión del botón
-        if (context.input.buttonPressed)
+        // Manejar presión del botón (evento)
+        if (context.input.buttonJustPressed())
         {
-            context.input.resetButton();
-
             // Manejar selección del menú
             switch (context.seleccionMenu)
             {
             case 0:
+                // "Continuar sesión anterior"
+                if (context.capturaActiva || context.tiempoTranscurrido > 0)
+                {
+                    SceneManager::setScene("dashboard", context);
+                }
+                else
+                {
+                    Serial.println("No hay sesión previa para continuar");
+                }
+                break;
+            case 1:
+                // "Iniciar nueva sesión"
+                context.capturaActiva = false;
+                context.tiempoTranscurrido = 0;
+                Serial.println("Iniciar nueva sesión seleccionado");
+                SceneManager::setScene("flujo", context);
+                break;
+            case 2:
                 // "Iniciar captura inmediata"
                 context.startCapture();
                 Serial.println("Iniciando captura inmediata");
                 SceneManager::setScene("flujo", context);
                 break;
-            case 1:
-                // "Continuar sesion anterior"
-                // TODO cargar flujo previo (?) confirmar con sebas
-                // TODO crear dashboard
-                Serial.println("Continuar sesión anterior seleccionado");
-                SceneManager::setScene("dashboard", context);
-                break;
-            case 2:
-                // "Iniciar nueva sesion"
-                Serial.println("Iniciar nueva sesión seleccionado");
-                SceneManager::setScene("flujo", context);
-                break;
             }
+            context.input.resetButton();
         }
 
         // Dibujar la escena
@@ -68,9 +73,9 @@ public:
         // Dibujar opciones del menú
         context.u8g2.setFont(u8g2_font_fivepx_tr);
         const char *opciones[] = {
-            "Iniciar captura inmediata",
             "Continuar sesion anterior",
             "Iniciar nueva sesion",
+            "Iniciar captura inmediata",
         };
 
         for (int i = 0; i < cantidadOpciones; i++)

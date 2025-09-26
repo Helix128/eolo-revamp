@@ -1,64 +1,80 @@
 #include "Logger.h"
 #include "AppContext.h"
 
-// Implementación de los métodos del Logger
-// Esto es necesario porque si no se forma una dependencia circular
-// entre AppContext.h y Logger.h
-// (y va más acorde a las buenas prácticas de oop con c++ supongo)
+// Implementación de Logger en .cpp — definiciones no-inline para que el
+// enlazador encuentre los símbolos de forma estándar.
+
+bool Logger::begin()
+{
+	if (!SD.begin(SD_CS_PIN))
+	{
+		Serial.println("Fallo al inicializar SD");
+		Logger::status = SD_ERROR;
+		return false;
+	}
+
+	if (!SD.exists(logFile))
+	{
+		File header = SD.open(logFile, FILE_WRITE);
+		if (header)
+		{
+			header.println("timestamp,flow,flow_target,temperature,humidity,pressure,pm1,pm25,pm10,battery_pct");
+			header.close();
+		}
+	}
+
+	Serial.println("SD inicializada");
+	Logger::status = SD_OK;
+	return true;
+}
 
 void Logger::capture(AppContext &context)
 {
-    File dataFile = SD.open(logFile, FILE_APPEND);
-    Logger::status = SD_WRITING;
-    if (dataFile)
-    {
-        // Timestamp
-        dataFile.print(context.rtc.getTimeString().c_str()); // reemplazar con tiempo real de rtc
-        dataFile.print(",");
+	if (Logger::status == SD_ERROR)
+	{
+		Serial.println("Logger: SD en error, intentando re-inicializar...");
+		if (!begin()) return;
+	}
 
-        // Flujo observado
-        dataFile.print(context.flowSensor.flowRate); // Reemplazar con lectura real
-        dataFile.print(",");
+	File dataFile = SD.open(logFile, FILE_APPEND);
+	if (!dataFile)
+	{
+		Serial.println("Error abriendo archivo en SD para append");
+		Logger::status = SD_ERROR;
+		return;
+	}
 
-        // Flujo objetivo/seteado
-        dataFile.print(context.flujoObjetivo);
-        dataFile.print(",");
+	Logger::status = SD_WRITING;
 
-        // Temperatura ºC
-        dataFile.print(context.bme.temperature); // Reemplazar con lectura real
-        dataFile.print(",");
+	unsigned long ts = context.nowSeconds();
+	dataFile.print(ts);
+	dataFile.print(',');
 
-        // Humedad %RH
-        dataFile.print(context.bme.humidity); // Reemplazar con lectura real
-        dataFile.print(",");
+	dataFile.print(context.flowSensor.flow);
+	dataFile.print(',');
 
-        // Presión hPa
-        dataFile.print(context.bme.pressure); // Reemplazar con lectura real
-        dataFile.print(",");
+	dataFile.print(context.flujoObjetivo);
+	dataFile.print(',');
 
-        // PM1.0 (DE ESTAR DESACTIVADO, DEBE SER -1)
-        dataFile.print(context.plantower.pm1); // Reemplazar con lectura real
-        dataFile.print(",");
+	dataFile.print(context.bme.temperature);
+	dataFile.print(',');
+	dataFile.print(context.bme.humidity);
+	dataFile.print(',');
+	dataFile.print(context.bme.pressure);
+	dataFile.print(',');
 
-        // PM2.5 (DE ESTAR DESACTIVADO, DEBE SER -1)
-        dataFile.print(context.plantower.pm25); // Reemplazar con lectura real
-        dataFile.print(",");
+	dataFile.print(context.plantower.pm1);
+	dataFile.print(',');
+	dataFile.print(context.plantower.pm25);
+	dataFile.print(',');
+	dataFile.print(context.plantower.pm10);
+	dataFile.print(',');
 
-        // PM10 (DE ESTAR DESACTIVADO, DEBE SER -1)
-        dataFile.print(context.plantower.pm10); // Reemplazar con lectura real
-        dataFile.print(",");
+	dataFile.print(context.getBatteryPercentage());
 
-        // Batería %
-        dataFile.print(context.getBatteryPercentage());
-        dataFile.print("\n");
-        dataFile.close();
+	dataFile.println();
+	dataFile.close();
 
-        Serial.println("Datos guardados en SD");
-        Logger::status = SD_OK;
-    }
-    else
-    {
-        Serial.println("Error guardando datos en SD");
-        Logger::status = SD_ERROR;
-    }
+	Serial.println("Datos guardados en SD");
+	Logger::status = SD_OK;
 }

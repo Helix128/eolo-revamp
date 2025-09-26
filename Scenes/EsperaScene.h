@@ -23,8 +23,8 @@ public:
         context.u8g2.setFont(u8g2_font_6x12_tr);
         context.u8g2.drawStr(8, 28, "INICIO:");
 
-        unsigned long nowSecs = millis() / 1000;
-        unsigned long startSecs = context.horaInicioCaptura;
+    unsigned long nowSecs = context.nowSeconds();
+    unsigned long startSecs = context.horaInicioCaptura;
         int startH = (startSecs / 3600) % 24;
         int startM = (startSecs / 60) % 60;
         char startBuf[6];
@@ -54,9 +54,9 @@ public:
 
         if (startSecs > 0 && nowSecs >= startSecs && !context.capturaActiva) {
             context.startCapture();
+            SceneManager::setScene("dashboard", context);
         }
 
-        // TODO: permitir inicio manual con context.input.buttonPressed()
     }
 };
 

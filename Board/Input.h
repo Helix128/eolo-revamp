@@ -9,10 +9,8 @@
 class Input
 {
 public:
-  // Variables públicas de input
-  volatile byte encoderDirection = 0;  // Dirección (Horario/Antihorario)
-  volatile byte encoderCounter = 0;    // Contador de pasos del encoder
-  volatile bool buttonPressed = false; // Estado del botón del encoder
+  // Constructor
+  Input() {}
 
   void begin()
   {
@@ -25,117 +23,138 @@ public:
     readEncoderData(); // Leer estado inicial
 
     // Inicializar estados previos para detección de cambios
-    prevEncoderCounterRaw = encoderCounter;
-    prevButtonRaw = buttonPressed;
+    prevEncoderCounterRaw = rawCounter;
+    prevButtonRaw = rawButton;
     lastButtonChangeMs = millis();
   }
 
-  // Función helper para actualizar datos del encoder
+  // Poll: actualizar lecturas desde el driver
   void poll()
   {
     readEncoderData();
   }
 
   // Reiniciar valor del encoder via driver
-  void resetCounter()
+  bool resetCounter()
   {
     Wire.beginTransmission(ATTINY_ADDRESS);
     Wire.write(CMD_RESET_COUNTER);
-    if (Wire.endTransmission() == 0)
+    bool ok = (Wire.endTransmission() == 0);
+    if (ok)
     {
-      encoderCounter = 0;
+      rawCounter = 0;
       prevEncoderCounterRaw = 0;
     }
+    return ok;
   }
 
   // Reiniciar botón del encoder via driver
-  void resetButton()
+  bool resetButton()
   {
     Wire.beginTransmission(ATTINY_ADDRESS);
     Wire.write(CMD_RESET_BUTTON);
-    if (Wire.endTransmission() == 0)
+    bool ok = (Wire.endTransmission() == 0);
+    if (ok)
     {
-      buttonPressed = false;
+      rawButton = false;
       prevButtonRaw = false;
     }
+    return ok;
   }
 
-  // --- Nuevos helpers públicos ---
-  // Devuelven true una vez por cada movimiento detectado en la dirección indicada.
-  bool encoderMovedRight()
+  // --- API limpia solicitada ---
+  // Devuelve la dirección actual del encoder: -1 = izquierda, 0 = sin movimiento, 1 = derecha
+  // Esta función detecta el cambio de rawCounter y consume el flanco (actualiza prev).
+  int getEncoderDirection()
   {
-    // Si hubo cambio y la dirección indica movimiento horario (asumimos 1 = horario)
-    if (encoderCounter != prevEncoderCounterRaw && encoderDirection == 1)
+    // Calcular el delta entre el contador actual y el previo manejando el wrap 0..255.
+    // Esto evita interpretar 255->0 como giro en sentido contrario.
+    if (rawCounter != prevEncoderCounterRaw)
     {
-      prevEncoderCounterRaw = encoderCounter;
-      return true;
+      int delta = (int)rawCounter - (int)prevEncoderCounterRaw;
+      // Ajustar por wrap-around
+      if (delta > 127) delta -= 256;
+      else if (delta < -127) delta += 256;
+
+      prevEncoderCounterRaw = rawCounter;
+      if (delta > 0) return 1;
+      if (delta < 0) return -1;
     }
-    return false;
+    return 0;
   }
 
-  bool encoderMovedLeft()
+  // Alternativa compatibilidad: devuelve true si hubo movimiento a la derecha/izquierda (no recomendado)
+  bool encoderMovedRight() { return getEncoderDirection() == 1; }
+  bool encoderMovedLeft() { return getEncoderDirection() == -1; }
+
+  // Devuelve el delta signed entre la lectura actual y la previa, manejando wrap (valor puede ser >1 si se giró rápido)
+  // Actualiza prevEncoderCounterRaw para consumir el flanco.
+  int getEncoderDelta()
   {
-    if (encoderCounter != prevEncoderCounterRaw && encoderDirection != 1)
-    {
-      prevEncoderCounterRaw = encoderCounter;
-      return true;
-    }
-    return false;
+    if (rawCounter == prevEncoderCounterRaw) return 0;
+    int delta = (int)rawCounter - (int)prevEncoderCounterRaw;
+    if (delta > 127) delta -= 256;
+    else if (delta < -127) delta += 256;
+    prevEncoderCounterRaw = rawCounter;
+    return delta;
   }
+
+  // Devuelve el valor raw actual del encoder (0..255) para usos que requieran un valor absoluto
+  uint8_t getEncoderValue() const { return rawCounter; }
+
+  // Devuelve el estado actual del botón (true = pulsado)
+  bool getButtonState() const { return rawButton; }
 
   // Devuelve true solo al detectar la transición no->sí del botón (con debounce simple)
   bool buttonJustPressed()
   {
     const unsigned long DEBOUNCE_MS = 50;
-    if (buttonPressed != prevButtonRaw)
+    if (rawButton != prevButtonRaw)
     {
-      // valor cambió; aplicar debounce temporal
       unsigned long now = millis();
       if (now - lastButtonChangeMs >= DEBOUNCE_MS)
       {
-        // Confirmar cambio estable
-        bool justPressed = buttonPressed && !prevButtonRaw;
-        prevButtonRaw = buttonPressed;
+        bool justPressed = rawButton && !prevButtonRaw;
+        prevButtonRaw = rawButton;
         lastButtonChangeMs = now;
         return justPressed;
       }
     }
     else
     {
-      // No hay cambio: actualizar timestamp para evitar bloqueos en flancos siguientes
       lastButtonChangeMs = millis();
     }
     return false;
   }
 
 private:
-  // Función interna para leer datos del encoder
+  // Lecturas crudas mantenidas internamente
+  volatile byte rawCounter = 0;   // Contador raw (0..255)
+  volatile bool rawButton = false; // Estado del botón (raw)
+
+  // Función interna para leer datos del encoder desde el ATTiny
   void readEncoderData()
   {
     if (Wire.requestFrom(ATTINY_ADDRESS, 3) == 3)
     {
-      byte prevDirection = encoderDirection;
-      byte prevCounter = encoderCounter;
-      bool prevButton = buttonPressed;
+      byte prevCounter = rawCounter;
+      bool prevButton = rawButton;
 
-      encoderDirection = Wire.read();
-      encoderCounter = Wire.read();
-      buttonPressed = (Wire.read() == 1);
+      // Nota: el ATTiny devuelve (direccion, contador, boton). Ignoramos la dirección
+      // porque ahora calculamos el sentido mediante delta wrap-aware.
+      (void)Wire.read(); // descartamos dirección
+      rawCounter = Wire.read();
+      rawButton = (Wire.read() == 1);
 
-      if (encoderDirection != prevDirection)
-      {
-        Serial.print("Encoder: Direccion cambio a ");
-        Serial.println(encoderDirection);
-      }
-      if (encoderCounter != prevCounter)
+      if (rawCounter != prevCounter)
       {
         Serial.print("Encoder: Contador cambio a ");
-        Serial.println(encoderCounter);
+        Serial.println(rawCounter);
       }
-      if (buttonPressed != prevButton)
+      if (rawButton != prevButton)
       {
         Serial.print("Encoder: Boton pulsado? ");
-        Serial.println(buttonPressed);
+        Serial.println(rawButton);
       }
     }
   }
